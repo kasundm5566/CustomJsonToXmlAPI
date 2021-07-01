@@ -6,11 +6,13 @@
 package com.kdm.converter.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author kasun.madusanke
  */
+@Component
 public class ConverterRequest {
 
     private String jobId;
@@ -30,5 +32,13 @@ public class ConverterRequest {
     @JsonProperty("file_name")
     public String getFileName() {
         return fileName;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

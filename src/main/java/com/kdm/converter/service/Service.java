@@ -42,6 +42,7 @@ public class Service {
     public ResponseEntity<Resource> convertJsonToJmfXML(@RequestBody ConverterRequest request) {
         Resource resource = null;
 
+        // Create JMF object
         QueueSubmissionParams submissionParams = new QueueSubmissionParams();
         submissionParams.setUrl("cid:jdfcontent");
         submissionParams.setReturnUrl("<http://abc.com/jdf>");
@@ -57,15 +58,17 @@ public class Service {
         jmf.setCommand(command);
 
         try {
+            // Create XML
             JAXBContext context = JAXBContext.newInstance(JMF.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            m.marshal(jmf, new File(JMF_XML));
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.marshal(jmf, new File(JMF_XML));
             resource = loadFileAsResource(JMF_XML);
         } catch (Exception ex) {
             Logger.getLogger(Service.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        // Setting up response headers
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + JMF_XML);
         headers.add(HttpHeaders.TRANSFER_ENCODING, "8bit");
@@ -81,6 +84,7 @@ public class Service {
     public ResponseEntity<Resource> convertJsonToJdfXML(@RequestBody ConverterRequest request) {
         Resource resource = null;
 
+        // Create JDF object
         FileSpec fileSpec = new FileSpec();
         fileSpec.setUrl(request.getFileName());
 
@@ -99,6 +103,7 @@ public class Service {
         jdf.setResourcePool(resourcePool);
 
         try {
+            // Create XML
             JAXBContext context = JAXBContext.newInstance(JDF.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
@@ -108,12 +113,13 @@ public class Service {
             Logger.getLogger(Service.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        // Setting up response headers
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + JDF_XML);
         headers.add(HttpHeaders.TRANSFER_ENCODING, "8bit");
 
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/vnd.cip4-jmf+xml; charset=UTF-8"))
+                .contentType(MediaType.parseMediaType("application/vnd.cip4-jdf+xml; charset=UTF-8"))
                 .headers(headers)
                 .body(resource);
     }
@@ -123,7 +129,7 @@ public class Service {
         if (resource.exists()) {
             return resource;
         } else {
-            throw new FileNotFoundException("File not found ");
+            throw new FileNotFoundException("File not found.");
         }
     }
 }
